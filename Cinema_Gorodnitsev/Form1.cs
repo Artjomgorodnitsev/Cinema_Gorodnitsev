@@ -78,7 +78,7 @@ namespace Cinema_Gorodnitsev
                         _arr[i, j].Location = new Point(j * 70+70, i * 70);
                         this.Controls.Add(_arr[i, j]);
                         _arr[i, j].Tag = new int[] {i,j };
-                        _arr[i, j].Click +=new System.EventHandler(Form1_Click);
+                    _arr[i, j].Click += new System.EventHandler(Form1_Click);
 
                     }
             }
