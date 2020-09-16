@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace Cinema_Gorodnitsev
 {
     public partial class Form1 : Form
     {
+        SqlConnection sqlCon = new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Tickets;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+        int Id = 0;
         public Form1()
         {
             InitializeComponent();
@@ -186,6 +189,9 @@ namespace Cinema_Gorodnitsev
                 }
             }
             else { MessageBox.Show("Надо выбрать место"); }
+
+
+
 
 
         }
