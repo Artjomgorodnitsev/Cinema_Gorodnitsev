@@ -1,7 +1,9 @@
 ﻿using Microsoft.VisualBasic;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Windows.Forms;
@@ -20,6 +22,7 @@ namespace Cinema_Gorodnitsev
         Button kinni;
         StreamWriter to_file;
         bool ost = false;
+        List<string> arr_pilet;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -44,7 +47,6 @@ namespace Cinema_Gorodnitsev
             }
             StreamReader from_file = new StreamReader("TextFile1.txt", false);
             string[] arr = from_file.ReadToEnd().Split('\n');
-            from_file.Close();
 
 
             for (int i = 0; i < 4; i++)
@@ -79,6 +81,8 @@ namespace Cinema_Gorodnitsev
 
                 }
             }
+            from_file.Close();
+
             osta = new Button();
             osta.Text = "Купить";
             osta.Location = new Point(275, 290);
@@ -136,11 +140,13 @@ namespace Cinema_Gorodnitsev
 
         private void Osta_Click_Func()
         {
+            arr_pilet = new List<string>();
             var vastus = MessageBox.Show("Вы уверены в выбраных местах?", "Appolo спрашивает", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (ost == true)
             {
                 if (vastus == DialogResult.Yes)
                 {
+                    //int t=0;
                     for (int i = 0; i < 4; i++)
                     {
 
@@ -148,13 +154,18 @@ namespace Cinema_Gorodnitsev
                         {
                             if (_arr[i, j].BackColor == Color.Yellow)
                             {
+                                //t++;
                                 _arr[i, j].BackColor = Color.Red;
-
-                                Pilet_Saada(i, j);
+                                /*StreamWriter pilet = new StreamWriter("Билет "+ t.ToString() +"Ряд " +i.ToString() + "Место"+j.ToString() + ".txt");
+                                arr_pilet[t-1]="Билет " + t.ToString() + "Ряд " + i.ToString() + "Место" + j.ToString();
+                                pilet.WriteLine("Билет "+ t.ToString() +"Ряд " +i.ToString() + "Место"+j.ToString() + ".txt");
+                                pilet.Close();*/
                             }
 
                         }
                     }
+                    
+
                 }
                 else
                 {
@@ -184,29 +195,34 @@ namespace Cinema_Gorodnitsev
             Osta_Click_Func();
         }
 
-        void Pilet_Saada(int i, int j)
+        /*void Pilet_Saada(int i, int j)
         {
-            string adress = Interaction.InputBox("Sisesta enail", "kuhu saada?", "artemgorodnitsev@gmail.com");
+            string adress = Interaction.InputBox("Введи эмаил", "Куда отослать?", "artemgorodnitsev@gmail.com");
             try
             {
                 MailMessage mail = new MailMessage();
                 SmtpClient smtpClient = new SmtpClient("smpt.gmail.com")
                 {
                     Port = 587,
-                    Credentials = new NetworkCredential("mvc.porgrammeerinime@gmail.com", "3.Kuursus"),                    
+                    Credentials = new NetworkCredential("mvc.programmeerimine@gmail.com", "3.Kuursus"),                    
                     EnableSsl = true
                 };
                 mail.From = new MailAddress("mvc.programmeerimine@gmail.com");
                 mail.To.Add(adress);
                 mail.Subject = "Pilet";
                 mail.Body = "Ряд " + i + " Место" + j;
+                foreach (var item in arr_pilet)
+                {
+                    mail.Attachments.Add(new Attachment(item));
+                }
                 smtpClient.Send(mail);
+                MessageBox.Show("Билеты были отправлены на почту: " + mail);
             }
             catch (Exception)
             {
-                MessageBox.Show("");
+                MessageBox.Show("Билеты отправлены");
             }
-        }
+        }*/
 
         private void Form1_Click(object sender, EventArgs e)
         {
