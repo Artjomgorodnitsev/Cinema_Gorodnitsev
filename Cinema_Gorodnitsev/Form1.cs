@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
+using System.Net.Mail;
 using System.Windows.Forms;
 
 namespace Cinema_Gorodnitsev
@@ -36,7 +33,7 @@ namespace Cinema_Gorodnitsev
 
                     for (int j = 0; j < 4; j++)
                     {
-                            text += i + "," + j + ",false;";
+                        text += i + "," + j + ",false;";
 
                     }
                     text += "\n";
@@ -52,35 +49,35 @@ namespace Cinema_Gorodnitsev
 
             for (int i = 0; i < 4; i++)
             {
-                    read[i] = new Label();
-                    read[i].Text = "Ряд " + (i+1);
-                    read[i].Size = new Size(70, 70);
-                    read[i].Location = new Point(1,i * 70);
-                    this.Controls.Add(read[i]);
-                    for (int j = 0; j < 4; j++)
+                read[i] = new Label();
+                read[i].Text = "Ряд " + (i + 1);
+                read[i].Size = new Size(70, 70);
+                read[i].Location = new Point(1, i * 70);
+                this.Controls.Add(read[i]);
+                for (int j = 0; j < 4; j++)
+                {
+                    _arr[i, j] = new Label();
+                    string[] arv = arr[i].Split(';');
+                    string[] ardNum = arv[j].Split(',');
+                    if (ardNum[2] == "true")
                     {
-                        _arr[i, j] = new Label();
-                        string[] arv = arr[i].Split(';');
-                        string[] ardNum = arv[j].Split(',');                       
-                        if(ardNum[2] == "true")
-                            {
-                                _arr[i, j].BackColor = Color.Red;
-                            }
-                        else
-                        {
-                            _arr[i, j].BackColor = Color.Green;
-                        }
-                        
-                        _arr[i, j].Text = "Место " + (j + 1);
-                        _arr[i, j].Size = new Size(70, 70);
+                        _arr[i, j].BackColor = Color.Red;
+                    }
+                    else
+                    {
                         _arr[i, j].BackColor = Color.Green;
-                        _arr[i, j].BorderStyle = BorderStyle.Fixed3D;
-                        _arr[i, j].Location = new Point(j * 70+70, i * 70);
-                        this.Controls.Add(_arr[i, j]);
-                        _arr[i, j].Tag = new int[] {i,j };
+                    }
+
+                    _arr[i, j].Text = "Место " + (j + 1);
+                    _arr[i, j].Size = new Size(70, 70);
+                    _arr[i, j].BackColor = Color.Green;
+                    _arr[i, j].BorderStyle = BorderStyle.Fixed3D;
+                    _arr[i, j].Location = new Point(j * 70 + 70, i * 70);
+                    this.Controls.Add(_arr[i, j]);
+                    _arr[i, j].Tag = new int[] { i, j };
                     _arr[i, j].Click += new System.EventHandler(Form1_Click);
 
-                    }
+                }
             }
             osta = new Button();
             osta.Text = "Купить";
@@ -100,48 +97,45 @@ namespace Cinema_Gorodnitsev
         {
             string text = "";
             to_file = new StreamWriter("TextFile1.txt", false);
+            for (int i = 0; i < 4; i++)
+            {
 
-                
-                for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
                 {
-
-                    for (int j = 0; j < 4; j++)
+                    if (_arr[i, j].BackColor == Color.Yellow)
                     {
-                        if (_arr[i, j].BackColor == Color.Yellow)
-                        {
-                            Osta_Click_Func();
-                        }
-
+                        Osta_Click_Func();
                     }
+
                 }
-            
-                for (int i = 0; i < 4; i++)
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+
+                for (int j = 0; j < 4; j++)
                 {
-
-                    for (int j = 0; j < 4; j++)
+                    if (_arr[i, j].BackColor == Color.Red)
                     {
-                        if (_arr[i, j].BackColor == Color.Red)
-                        {
-                            text += i + "," + j + ",true;";
-                        }
-                        else
-                        {
-                            text += i + "," + j + ",false;";
-                        }
-
+                        text += i + "," + j + ",true;";
                     }
-                    text += "\n";
-                }
-                to_file.Write(text);
-                to_file.Close();
-                this.Close();
+                    else
+                    {
+                        text += i + "," + j + ",false;";
+                    }
 
-            
+                }
+                text += "\n";
+            }
+            to_file.Write(text);
+            to_file.Close();
+            this.Close();
+
+
         }
 
         private void Osta_Click_Func()
         {
-            string text = "";
             var vastus = MessageBox.Show("Вы уверены в выбраных местах?", "Appolo спрашивает", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (ost == true)
             {
@@ -155,6 +149,8 @@ namespace Cinema_Gorodnitsev
                             if (_arr[i, j].BackColor == Color.Yellow)
                             {
                                 _arr[i, j].BackColor = Color.Red;
+
+                                Pilet_Saada(i, j);
                             }
 
                         }
@@ -179,13 +175,37 @@ namespace Cinema_Gorodnitsev
                 }
             }
             else { MessageBox.Show("Надо выбрать место"); }
-            
-            
+
+
         }
 
         private void Osta_Click(object sender, EventArgs e)
         {
             Osta_Click_Func();
+        }
+
+        void Pilet_Saada(int i, int j)
+        {
+            string adress = Interaction.InputBox("Sisesta enail", "kuhu saada?", "artemgorodnitsev@gmail.com");
+            try
+            {
+                MailMessage mail = new MailMessage();
+                SmtpClient smtpClient = new SmtpClient("smpt.gmail.com")
+                {
+                    Port = 587,
+                    Credentials = new NetworkCredential("mvc.porgrammeerinime@gmail.com", "3.Kuursus"),                    
+                    EnableSsl = true
+                };
+                mail.From = new MailAddress("mvc.programmeerimine@gmail.com");
+                mail.To.Add(adress);
+                mail.Subject = "Pilet";
+                mail.Body = "Ряд " + i + " Место" + j;
+                smtpClient.Send(mail);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("");
+            }
         }
 
         private void Form1_Click(object sender, EventArgs e)
@@ -203,9 +223,11 @@ namespace Cinema_Gorodnitsev
             {
                 MessageBox.Show(message);
             }
-           
-            
+
+
 
         }
+
+
     }
 }
