@@ -14,7 +14,7 @@ namespace Cinema_Gorodnitsev
 {
     public partial class Form1 : Form
     {
-        SqlConnection sqlCon = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\Cinema_Gorodnitsev4\DB\Piletid2.mdf;Integrated Security=True;Connect Timeout=30");
+        SqlConnection sqlCon = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\AppData\Database1.mdf;Integrated Security=True");
         int Id = 0;
         public Form1()
         {
